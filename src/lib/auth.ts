@@ -18,14 +18,15 @@ export async function verifyPassword(
 }
 
 // Generate JWT token
-export function generateToken(userId: string): string {
+export function generateToken(userId: number): string {
+  // @ts-expect-error - expiresIn type mismatch with jwt library
   return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 }
 
 // Verify JWT token
-export function verifyToken(token: string): { userId: string } | null {
+export function verifyToken(token: string): { userId: number } | null {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
     return decoded;
   } catch (error) {
     return null;

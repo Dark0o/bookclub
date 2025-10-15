@@ -4,7 +4,9 @@ import { hashPassword, generateToken } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
+    console.log("📝 Register route called");
     const body = await request.json();
+    console.log("📨 Body:", { email: body.email, username: body.username });
     const { email, username, password, name } = body;
 
     // validate credentials
@@ -16,11 +18,13 @@ export async function POST(request: NextRequest) {
     }
 
     // check if user already exists
+    console.log("🔍 Checking for existing user...");
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [{ email }, { username }],
       },
     });
+    console.log("✅ Existing user check done:", !!existingUser);
 
     if (existingUser) {
       return NextResponse.json(
@@ -30,9 +34,12 @@ export async function POST(request: NextRequest) {
     }
 
     // hash password
+    console.log("🔐 Hashing password...");
     const hashedPassword = await hashPassword(password);
+    console.log("✅ Password hashed");
 
     // create user
+    console.log("👤 Creating user...");
     const user = await prisma.user.create({
       data: {
         email,

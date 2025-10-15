@@ -11,36 +11,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { RegisterForm } from "@/components/auth/RegisterForm";
 
 export default function Home() {
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.id === "login-email") {
-      setLoginEmail(e.target.value);
-    } else if (e.target.id === "login-password") {
-      setLoginPassword(e.target.value);
-    }
-  };
-  console.log(loginEmail, loginPassword);
-
-  const login = async () => {
-    const response = await fetch("/api/auth/login", {
-      method: "POST",
-      body: JSON.stringify({ email: loginEmail, password: loginPassword }),
-    });
-    const data = await response.json();
-    console.log(data);
-    if (response.ok) {
-      const data = await response.json();
-      console.log(data);
-    } else {
-      console.error("Failed to login");
-    }
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-md px-4">
@@ -65,78 +38,31 @@ export default function Home() {
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="login">
-                <TabsContent value="login" className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="login-email">Email</Label>
-                    <Input
-                      id="login-email"
-                      type="email"
-                      placeholder="your@email.com"
-                      onChange={(e) => handleChange(e)}
-                      value={loginEmail}
-                    />
-                  </div>
+              <TabsContent value="login" className="space-y-4">
+                {/* Login form - ostaje kao pre za sada */}
+                <div className="space-y-2">
+                  <Label htmlFor="login-email">Email</Label>
+                  <Input
+                    id="login-email"
+                    type="email"
+                    placeholder="your@email.com"
+                  />
+                </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="login-password">Password</Label>
-                    <Input
-                      id="login-password"
-                      type="password"
-                      placeholder="••••••••"
-                      onChange={(e) => handleChange(e)}
-                      value={loginPassword}
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="login-password">Password</Label>
+                  <Input
+                    id="login-password"
+                    type="password"
+                    placeholder="••••••••"
+                  />
+                </div>
 
-                  <Button onClick={login} className="w-full">
-                    Log In
-                  </Button>
-                </TabsContent>
+                <Button className="w-full">Log In</Button>
               </TabsContent>
 
               <TabsContent value="signup">
-                <TabsContent value="signup">
-                  <TabsContent value="signup" className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="signup-email">Email</Label>
-                      <Input
-                        id="signup-email"
-                        type="email"
-                        placeholder="your@email.com"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="signup-username">Username</Label>
-                      <Input
-                        id="signup-username"
-                        type="text"
-                        placeholder="johndoe"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="signup-password">Password</Label>
-                      <Input
-                        id="signup-password"
-                        type="password"
-                        placeholder="••••••••"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="signup-name">Name (optional)</Label>
-                      <Input
-                        id="signup-name"
-                        type="text"
-                        placeholder="John Doe"
-                      />
-                    </div>
-
-                    <Button className="w-full">Create Account</Button>
-                  </TabsContent>
-                </TabsContent>
+                <RegisterForm />
               </TabsContent>
             </Tabs>
           </CardContent>
