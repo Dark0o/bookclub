@@ -1,8 +1,7 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
+import { cookies } from "next/headers";
+import { getUserById } from "./services/user.service";
+import { verifyToken } from "./jwt";
 
 // Hash password
 export async function hashPassword(password: string): Promise<string> {
@@ -17,18 +16,20 @@ export async function verifyPassword(
   return await bcrypt.compare(password, hashedPassword);
 }
 
-// Generate JWT token
-export function generateToken(userId: number): string {
-  // @ts-expect-error - expiresIn type mismatch with jwt library
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
-}
+// Get current user from cookie (server-side only)
+export async function getCurrentUser() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
 
-// Verify JWT token
-export function verifyToken(token: string): { userId: number } | null {
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
-    return decoded;
-  } catch (error) {
+  if (!token) {
     return null;
   }
+
+  const decoded = await verifyToken(token);
+  if (!decoded) {
+    return null;
+  }
+
+  // Get user from database using service
+  return await getUserById(decoded.userId);
 }

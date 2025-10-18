@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { verifyPassword, generateToken } from "@/lib/auth";
+import { verifyPassword } from "@/lib/auth";
+import { getUserByEmail } from "@/lib/services/user.service";
+import { generateToken } from "@/lib/jwt";
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,9 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     // find user
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const user = await getUserByEmail(email);
 
     if (!user) {
       return NextResponse.json(
@@ -38,7 +37,7 @@ export async function POST(request: NextRequest) {
     }
 
     // generate JWT token
-    const token = generateToken(user.id);
+    const token = await generateToken(user.id);
 
     // create response
     const response = NextResponse.json(

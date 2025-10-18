@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { hashPassword, generateToken } from "@/lib/auth";
+import { hashPassword } from "@/lib/auth";
+import { userExists, createUser } from "@/lib/services/user.service";
+import { generateToken } from "@/lib/jwt";
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("📝 Register route called");
     const body = await request.json();
-    console.log("📨 Body:", { email: body.email, username: body.username });
+
     const { email, username, password, name } = body;
 
     // validate credentials
@@ -18,15 +18,11 @@ export async function POST(request: NextRequest) {
     }
 
     // check if user already exists
-    console.log("🔍 Checking for existing user...");
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [{ email }, { username }],
-      },
-    });
-    console.log("✅ Existing user check done:", !!existingUser);
 
-    if (existingUser) {
+    const exists = await userExists(email, username);
+    console.log("✅ Existing user check done:", exists);
+
+    if (exists) {
       return NextResponse.json(
         { error: "User with this email or username already exists" },
         { status: 400 }
@@ -40,17 +36,15 @@ export async function POST(request: NextRequest) {
 
     // create user
     console.log("👤 Creating user...");
-    const user = await prisma.user.create({
-      data: {
-        email,
-        username,
-        password: hashedPassword,
-        name: name || null,
-      },
+    const user = await createUser({
+      email,
+      username,
+      password: hashedPassword,
+      name: name || null,
     });
 
     // generate JWT token
-    const token = generateToken(user.id);
+    const token = await generateToken(user.id);
 
     // create response
     const response = NextResponse.json(
