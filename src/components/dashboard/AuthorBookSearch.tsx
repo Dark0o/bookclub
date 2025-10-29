@@ -6,16 +6,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-interface Author {
-  key: string;
-  name: string;
-  workCount: number;
-  topWork: string | null;
-  bio: string | null;
-  birthDate: string | null;
-  topSubjects: string[];
-}
+import { AuthorCard, type Author } from "./AuthorCard";
 
 interface Book {
   key: string;
@@ -217,51 +208,6 @@ export function AuthorBookSearch() {
           </p>
         )}
     </div>
-  );
-}
-
-interface AuthorCardProps {
-  author: Author;
-  onSelect: () => void;
-}
-
-function AuthorCard({ author, onSelect }: AuthorCardProps) {
-  return (
-    <Card
-      className="cursor-pointer hover:shadow-lg transition-shadow"
-      onClick={onSelect}
-    >
-      <CardHeader>
-        <CardTitle className="text-lg">{author.name}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        <p className="text-sm text-muted-foreground">
-          <strong>Works:</strong> {author.workCount}
-        </p>
-        {author.topWork && (
-          <p className="text-sm text-muted-foreground">
-            <strong>Top Work:</strong> {author.topWork}
-          </p>
-        )}
-        {author.birthDate && (
-          <p className="text-sm text-muted-foreground">
-            <strong>Born:</strong> {author.birthDate}
-          </p>
-        )}
-        {author.topSubjects.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-2">
-            {author.topSubjects.slice(0, 3).map((subject, idx) => (
-              <span
-                key={idx}
-                className="text-xs bg-primary/10 text-primary px-2 py-1 rounded"
-              >
-                {subject}
-              </span>
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
   );
 }
 

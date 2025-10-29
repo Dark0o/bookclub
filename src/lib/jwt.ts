@@ -26,7 +26,7 @@ export async function verifyToken(
     return { userId: payload.userId as number };
   } catch (error) {
     console.error(
-      "❌ JWT verification failed:",
+      "JWT verification failed:",
       error instanceof Error ? error.message : error
     );
     return null;
